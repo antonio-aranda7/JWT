@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Dutch Treat : @ViewBag.Title</title>
+  <environment names="Development">
+    <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+    <link href="~/lib/font-awesome/css/font-awesome.css" rel="stylesheet" />
+    <link href="~/css/site.css" rel="stylesheet" />
+  </environment>
+
+  <environment names="Staging,Production">
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/lib/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/css/site.css" rel="stylesheet" />
+  </environment>
+
+</head>
+<body>
+  <div class="navbar navbar-inverse">
+    <header class="container">
+      <div class="navbar-header">
+        <div class="navbar-brand"><i class="fa fa-paint-brush"></i>Dutch Treat!</div>
+        @* Let us add a little menu button using the following special chars *@
+        <button class="navbar-toggle" data-toggle="collapse" data-target="#menu">&#9776;</button>
+      </div>
+      @* hide menu on small screens until the toggle button can actually show it *@
+      <div id="menu" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+          <li><a asp-controller="App" asp-action="Index">Home</a></li>
+          <li><a asp-controller="App" asp-action="Contact">Contact</a></li>
+          <li><a asp-controller="App" asp-action="About">About</a></li>
+          <li><a asp-controller="App" asp-action="Shop">Shop</a></li>
+          @if (User.Identity.IsAuthenticated)
+          {
+            <li><a asp-controller="Account" asp-action="Logout">Logout</a></li>
+          }
+          else
+          {
+            <li><a asp-controller="Account" asp-action="Login">Login</a></li>
+          }
+
+        </ul>
+      </div>
+    </header>
+  </div>
+  <section class="container">
+    <h2 class="text-center">@ViewBag.Title</h2>
+    @RenderBody()
+  </section>
+  <footer class="container">
+    <div class="text-center">Copyright 2018 Dutch Treat LLC</div>
+  </footer>
+  <!-- javascript generally has stuff that manipulates contents on the website. hence load it towards the end of the page. -->
+  <environment names="Development">
+    <script src="~/lib/jQuery/dist/jquery.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="~/js/index.js"></script>
+  </environment>
+  <environment names="Staging,Production">
+    <script src="//ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.4.min.js"
+            asp-fallback-src="~/lib/jQuery/dist/jquery.min.js"
+            asp-fallback-test="window.jQuery"></script>
+    <script src="//ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/bootstrap.min.js"
+            asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
+            asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"></script>
+    <script src="~/js/index.js"></script>
+    <script src="~/dist/dutchtreat.min.js" asp-append-version="true"></script>
+  </environment>
+  @* scripts section is not required. if one of the pages creates a section called scripts, then put it here in the layout page
+
+  *@
+  @RenderSection("scripts", false)
+</body>
+</html>
