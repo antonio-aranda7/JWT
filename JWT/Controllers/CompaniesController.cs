@@ -15,51 +15,31 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text.Json;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace CompanyEmployees.Controllers
 {
     [Route("api/companies")]
+    //[Authorize]
     [ApiController]
     public class CompaniesController : ControllerBase
     {
-        private readonly DutchContext _ctx;
-        private readonly ILogger _logger;
         private readonly IRepositoryManager _repository;
         private readonly IMapper _mapper;
 
-        public CompaniesController(DutchContext ctx, IRepositoryManager repository, IMapper mapper, ILogger logger)
+        public CompaniesController(IRepositoryManager repository, IMapper mapper)
         {
-            _ctx = ctx;
             _repository = repository;
             _mapper = mapper;   
-            _logger = logger;   
         }
 
         [HttpGet]
-        public List<Company> GetCompanies()
-        {
-            try
-            {
-                var Comp = new CompanyBL(_ctx);
-                var result = Comp.GetCompanies();
-                return result;
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-        }
-
-
-        [HttpGet("GetCompanies")]
         public IActionResult AllCompanies()
         {
             try
             {
                 var claims = User.Claims;
-                var coompanie = new Company();
-               _repository.Company.Create(coompanie);
-                var company= _repository.Company.GetAllCompanies(trackChanges: false);
+                var company= _repository.Company.GetAllCompanies();
                 //var companiesDto = _mapper.Map<Company>(company);
                 //var companiesDto = _mapper.Map<IEnumerable<CompanyDto>>(company);
 
@@ -71,62 +51,71 @@ namespace CompanyEmployees.Controllers
             }
         }
 
-        // GET: api/companies/5
         [HttpGet("{id}")]
-        public Company GetPlanet(int id)
+        public IActionResult GetCompanyById(int id)
         {
             try
             {
-                if (_ctx.Companies == null)
-                {
-                    return null;
-                }
-                var Comp = new CompanyBL(_ctx);
-                var companie =  Comp.GetCompaniesById(id);
-                return companie;
+                var company = _repository.Company.GetCompanyById(id);
+                //var companiesDto = _mapper.Map<Company>(company);
+                //var companiesDto = _mapper.Map<IEnumerable<CompanyDto>>(company);
+
+                return Ok(company);
             }
             catch (Exception ex)
             {
-                return null;
+                return StatusCode(500, "Internal server error");
             }
         }
 
         [HttpPost]
-        public Response NewCompanies(Company company)
+        public IActionResult NewCompany(Company company)
         {
             try
             {
-                var Comp = new CompanyBL(_ctx);
-                var result = Comp.NewCompanies(company);
-                return result;
+                _repository.Company.NewCompany(company);
+                _repository.Save();
+
+                return Ok();
             }
             catch (Exception ex)
             {
-                return null;
+                return StatusCode(500, "Internal server error");
             }
         }
 
         [HttpPut]
-        public Response UpdateCompanies(Company company)
+        public IActionResult UpdateCompanies(Company company)
         {
             try
             {
-                var Comp = new CompanyBL(_ctx);
-                var result = Comp.UpdateCompanies(company);
-                return result;
+                _repository.Company.UpdateCompany(company);
+                _repository.Save();
+
+                return Ok();
+
             }
             catch (Exception ex)
             {
-                return null;
+                return StatusCode(500, "Internal server error");
             }
         }
 
         [HttpDelete("{id}")]
-        public Response DeleteCompanies(int id)
-        {     
-                var Comp = new CompanyBL(_ctx);
-                var result = Comp.DeleteCompanies(id);
-                return result;                     
+        public IActionResult DeleteCompanies(int id)
+        {
+            try
+            {
+                _repository.Company.DeleteCompany(id);
+                _repository.Save();
+
+                return Ok();
+            }
+            catch (Exception)
+            {
+
+                return StatusCode(500, "Internal server error");
+            }
         }
     }
 }

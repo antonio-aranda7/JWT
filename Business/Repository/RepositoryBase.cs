@@ -16,20 +16,11 @@ namespace CompanyEmployees.Repository
             _dutchContext = dutchContext;
         }
 
-        public IQueryable<T> FindAll(bool trackChanges) =>
-            !trackChanges ?
-              _dutchContext.Set<T>()
-                .AsNoTracking() :
-              _dutchContext.Set<T>();
+        public IQueryable<T> FindAll() => 
+            _dutchContext.Set<T>().AsNoTracking();
 
-       /* public IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression,
-        bool trackChanges) =>
-            !trackChanges ?
-              _dutchContext.Set<T>()
-                .Where(expression)
-                .AsNoTracking() :
-              _dutchContext.Set<T>()
-                .Where(expression);*/
+        public IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression) =>
+            _dutchContext.Set<T>().Where(expression).AsNoTracking();
 
         public void Create(T entity) => _dutchContext.Set<T>().Add(entity);
 

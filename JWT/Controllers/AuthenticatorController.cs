@@ -7,6 +7,7 @@ using Data;
 using Entities.Models;
 using Entities.Dtos;
 using System;
+using CompanyEmployees.Entities.DataTransferObjects;
 
 namespace net6.Controllers
 {
@@ -30,7 +31,9 @@ namespace net6.Controllers
 
             var authenticationBL = new AuthenticationBL(_config, _ctx);
             var result = authenticationBL.Validate(request);
-            return StatusCode(result.Code, new { token = result.Token });
+            //return StatusCode(result.Code, new { token = result.Token });
+
+            return Ok(new AuthResponseDto { IsAuthSuccessful = true, Token = result.Token });
 
         }
 
@@ -43,6 +46,7 @@ namespace net6.Controllers
             {
                 var users = new AuthenticationBL(_config, _ctx);
                 var result = users.NewUser(user);
+
                 return result;
             }
             catch (Exception ex)

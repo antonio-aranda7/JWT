@@ -92,7 +92,7 @@ namespace JWT
             //app.UseStaticFiles();
             app.UseCors("MyPolicy");
             app.UseRouting();
-            app.UseAuthentication();
+            //app.UseAuthentication();
             app.UseAuthorization();
 
 

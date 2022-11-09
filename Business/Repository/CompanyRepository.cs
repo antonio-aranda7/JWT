@@ -5,6 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using static Humanizer.In;
+using Entities.Dtos;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CompanyEmployees.Repository
 {
@@ -15,18 +19,35 @@ namespace CompanyEmployees.Repository
         {
         }
 
-        public IEnumerable<Company> GetAllCompanies(bool trackChanges)
+        public IEnumerable<Company> GetAllCompanies()
         {
-            return FindAll(trackChanges)
-                .OrderBy(companie => companie.Name)
+            return FindAll()
+                .OrderBy(companie => companie.Id)
                 .ToList();
         }
 
-        /*public Company GetCompanyById(int Id)
+        public Company GetCompanyById(int Id)
         {
-            return FindByCondition(company => company.Id.Equals(Id))
-                    .FirstOrDefault();
-        }*/
+            var company = FindByCondition(company => company.Id.Equals(Id)).FirstOrDefault();
 
+            return company;
+        }
+
+        public void NewCompany(Company company)
+        {
+            Create(company);
+        }
+
+        public void UpdateCompany(Company company)
+        {
+            Update(company);
+        }
+
+        public void DeleteCompany(int id)
+        {
+            var company = GetCompanyById(id);
+
+            Delete(company);
+        }
     }
 }

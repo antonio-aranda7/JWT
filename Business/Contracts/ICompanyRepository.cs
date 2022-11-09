@@ -6,10 +6,19 @@ using static Humanizer.In;
 
 namespace CompanyEmployees.Contracts
 {
-    public interface ICompanyRepository : IRepositoryBase<Company>
+    public interface ICompanyRepository //: IRepositoryBase<Company>
     {
-        IEnumerable<Company> GetAllCompanies(bool trackChanges);
+        IEnumerable<Company> GetAllCompanies();
 
-        //Company GetCompanyById(int Id, bool trackChanges);
+        Company GetCompanyById(int Id);
+
+        //Company GetCompanyByName(string Name);
+
+        void NewCompany(Company company);
+
+        void UpdateCompany(Company company);
+
+        void DeleteCompany(int id);
+
     }
 }
