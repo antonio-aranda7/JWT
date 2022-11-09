@@ -16,11 +16,12 @@ using System.Numerics;
 using System.Text.Json;
 using System.Threading.Tasks;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using System.Data;
 
 namespace CompanyEmployees.Controllers
 {
     [Route("api/companies")]
-    //[Authorize]
+    //[Authorize/*(Roles = "Manager")*/]
     [ApiController]
     public class CompaniesController : ControllerBase
     {
@@ -30,10 +31,10 @@ namespace CompanyEmployees.Controllers
         public CompaniesController(IRepositoryManager repository, IMapper mapper)
         {
             _repository = repository;
-            _mapper = mapper;   
+            _mapper = mapper;
         }
 
-        [HttpGet]
+        [HttpGet/*, Authorize*/]
         public IActionResult AllCompanies()
         {
             try

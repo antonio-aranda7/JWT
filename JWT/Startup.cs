@@ -47,6 +47,7 @@ namespace JWT
             services.AddAuthentication(config => {
                 config.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 config.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                config.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 
 
 
@@ -55,10 +56,20 @@ namespace JWT
                 config.SaveToken = true;
                 config.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
+                    //ValidAudience= Configuration["JWT:"],
+                    //ValidateIssuerSigningKey = true,
+                    //IssuerSigningKey = "",//new SymmetricSecurityKey(keyBytes),
+
                     ValidateIssuer = true,
                     ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = Configuration["JWT:validIssuer"],
+                    ValidAudience = Configuration["JWT:validAudience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
+                    .GetBytes(Configuration.GetSection("JWT:securityKey").Value))
+
+
                 };
 
             });
@@ -92,7 +103,8 @@ namespace JWT
             //app.UseStaticFiles();
             app.UseCors("MyPolicy");
             app.UseRouting();
-            //app.UseAuthentication();
+             
+            app.UseAuthentication();
             app.UseAuthorization();
 
 

@@ -10,21 +10,26 @@ using System;
 using Data;
 using System.Linq;
 using Entities.Models;
+using Humanizer.Configuration;
+using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
 
 namespace Business
 {
     public class AuthenticationBL : IAuthenticationBL
     {
         private readonly DutchContext _ctx;
+        private readonly IConfiguration _configuration;
         private readonly string? secretKey;
 
         public AuthenticationBL(IConfiguration config, DutchContext ctx)
         {
-            secretKey = config.GetSection("settings").GetSection("secretKey").ToString();
+            secretKey = config.GetSection("JWT").GetSection("securityKey").ToString();
             _ctx = ctx;
+            _configuration = config;
         }
 
-        public bool GetUser(String email, String key)
+        public bool UserLogin(String email, String key)
         {
 
             var user = _ctx.Users
@@ -40,6 +45,7 @@ namespace Business
                 return false;
             }
         }
+
         public Response NewUser(User user)
         {
             try
@@ -67,17 +73,32 @@ namespace Business
 
         }
 
+        public List<Claim> GetClaims(IdentityUser user)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.Email),
+                //new Claim(ClaimTypes.Role, "Manager"),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+
+        };
+
+            return claims;
+        }
+
 
         public Response Validate(User user)
         {
-            var results = GetUser(user.Email, user.Password);
+            var results = UserLogin(user.Email, user.Password);
 
             if (results)
             {
 
-                var keyBytes = Encoding.ASCII.GetBytes(secretKey);
-                var claims = new ClaimsIdentity();
+                var keyBytes = Encoding.ASCII.GetBytes(secretKey/*_configuration.GetSection("JWT:securityKey").Value*/);
+                var claims = new ClaimsIdentity();      
                 claims.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Email));
+                //claims.AddClaim( new Claim(ClaimTypes.Role, "Manager"));
+                //claims.AddClaim(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
 
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
